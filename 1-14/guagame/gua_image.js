@@ -35,7 +35,7 @@ class Bullet extends GuaImage {
         this.setup()
     }
     setup() {
-        // this.speed = 1
+        this.speed = 1
     }
     update() {
         this.y -= this.speed
@@ -56,13 +56,12 @@ class Player extends GuaImage {
         this.cooldown = 0
     }
     update() {
-        this.speed = config.player_speed
         if (this.cooldown > 0) {
             this.cooldown -= 1
         }
     }
     debug() {
-        this.cooldown = config.bullet_cooldown
+        this.speed = config.player_speed
     }
     moveLeft() {
         this.x -= this.speed
@@ -79,6 +78,13 @@ class Player extends GuaImage {
     fire() {
         // cooldown当做状态信号，由update更新给出
         if (this.cooldown == 0) {
+            var s = this.game.scene
+            if (s.enableDebugMode) {
+                this.cooldown = config.bullet_cooldown
+            }
+            else {
+                this.cooldown = 5
+            }
             var x = this.x + this.w / 2
             var y = this.y - this.h
             var b = Bullet.new(this.game)
@@ -97,6 +103,7 @@ class Enemy extends GuaImage {
     setup() {
         this.x = randomBetween(0, 320)
         this.y = -randomBetween(0, 30)
+        this.speed = 5
     }
     update() {
         this.y += this.speed
@@ -117,6 +124,7 @@ class Cloud extends GuaImage {
     setup() {
         this.x = randomBetween(0, 320)
         this.y = -randomBetween(0, 30)
+        this.speed = 3
     }
     update() {
         this.y += this.speed
