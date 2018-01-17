@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Guagame</title>
+        <style>
+            canvas{
+                border: solid 1px black
+            }
+        </style>
+        <script src="guagame/utils.js"></script>
+        <script src="guagame/gua_animation.js"></script>
+        <script src="guagame/gua_game.js"></script>
+        <script src="guagame/gua_scene.js"></script>
+        <script src="guagame/gua_image.js"></script>
+        <script src="guagame/gua_particle_system.js"></script>
+
+        <script src="scene/main/ball.js"></script>
+        <script src="scene/main/paddle.js"></script>
+        <script src="scene/main/block.js"></script>
+        <script src="scene/main/scene.js"></script>
+
+        <script src="scene/end/scene_end.js"></script>
+
+        <script src="scene/title/scene_title.js"></script>
+
+        <script src="levels.js"></script>
+    </head>
+    <body>
+        <canvas id="id-canvas" width="350" height="480"></canvas>
+        <hr>
+        <input type="range" id="id-speed" name="" value="1">
+        <div class="">
+            <label>
+                <input class="gua-auto-slider" type="range"
+                    value=""
+                    data-value="config.player_speed"
+                    >
+                玩家速度：<span class="gua-label"></span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input class="gua-auto-slider" type="range"
+                    value=""
+                    data-value="config.enemy_speed"
+                    >
+                敌人速度：<span class="gua-label"></span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input class="gua-auto-slider" type="range"
+                    value=""
+                    max="10"
+                    min="-10"
+                    data-value="config.cloud_speed"
+                    >
+                云速度：<span class="gua-label"></span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input class="gua-auto-slider" type="range"
+                    value=""
+                    data-value="config.bullet_speed"
+                    >
+                子弹速度：<span class="gua-label"></span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input class="gua-auto-slider" type="range"
+                    value=""
+                    data-value="config.bullet_cooldown"
+                    >
+                子弹冷却：<span class="gua-label"></span>
+            </label>
+        </div>
+<script>
+    var es = sel => document.querySelectorAll(sel)
+
+    var bindAll = function(sel, eventName, callback) {
+        var l = es(sel)
+        for (var i = 0; i < l.length; i++) {
+            var input = l[i]
+            log(input, 'wonder what input is?')
+            input.addEventListener(eventName, function(event) {
+                log(event, 'wonder what event is?')
+                callback(event)
+            })
+        }
+    }
+    bindAll('.gua-auto-slider', 'input', function(event) {
+        var target = event.target
+        var bindVar = target.dataset.value // dataset的作用？
+        var v = target.value
+        eval(bindVar + '=' + v) // eval的作用？
+        //closest作用？
+        var label = target.closest('label').querySelector('.gua-label')
+        label.innerText = v
+    })
+</script>
+<script src="main.js"></script>
+    </body>
+</html>
