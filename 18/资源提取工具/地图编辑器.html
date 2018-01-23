@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>guario mapeditor</title>
+        <style>
+            div {
+                outline: dashed lightskyblue 1px;
+            }
+            canvas{
+                border: dashed 1px lightskyblue;
+            }
+            .gua-inline-block {
+                display: inline-block;
+            }
+            * {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="id-canvas"
+            data-action='draw_tile'
+            width="512" height="480"></canvas>
+        <div class="gua-inline-block">
+            <img src="tiles/b1.png" data-action="change_active_tile" data-id='1'>
+            <img src="tiles/b2.png" data-action="change_active_tile" data-id='2'>
+            <img src="tiles/b3.png" data-action="change_active_tile" data-id='3'>
+            <img src="tiles/b4.png" data-action="change_active_tile" data-id='4'>
+            <img src="" data-action="change_active_tile" data-id='5'>
+        </div>
+        <h3>#5080FF</h3>
+    </body>
+<script>
+let e = sel => document.querySelector(sel)
+let log = console.log.bind(console)
+
+const actions = {
+    change_active_tile: function(event) {
+        let id = event.target.dataset.id
+        log('active tile id', id)
+        window.activeTile = event.target
+    },
+    draw_tile: event => {
+        if (!window.activeTile) {
+            return
+        }
+        let target = event.target
+        let type = target.dataset.type
+        let rect = target.getBoundingClientRect()
+        let x = event.clientX - rect.left
+        let y = event.clientY - rect.top
+        let tileSize = 32
+        let i = Math.floor(x / tileSize)
+        let j = Math.floor(y / tileSize)
+        let x1 = i * tileSize
+        let y1 = j * tileSize
+        // window.context.fillStyle = '#5080FF'
+        window.context.fillRect(x1, y1, tileSize, tileSize)
+        window.context.drawImage(window.activeTile, x1, y1)
+    },
+}
+
+const tilePosition = (x, y) => {
+    let tileSize = 32
+    let i = Math.floor(x / tileSize)
+    let j = Math.floor(y / tileSize)
+    let x1 = i * tileSize
+    let y1 = j * tileSize
+    return [x1, y1]
+}
+
+const drawTileAt = (x, y) => {
+    let tileSize = 32
+    let [x1, y1] = tilePosition(x, y)
+    // window.context.fillStyle = '#5080FF'
+    window.context.fillRect(x1, y1, tileSize, tileSize)
+    window.context.drawImage(window.activeTile, x1, y1)
+    // FIXME， 暂时这么弄一下
+    let tile = Number(window.activeTile.dataset.id)
+    let mx = x1 / tileSize
+    let my = y1 / tileSize
+    window.map.setTile(mx, my, tile)
+}
+
+const bindEvents = () => {
+    e('body').addEventListener('click', event => {
+        let action = event.target.dataset.action
+        actions[action] && actions[action](event)
+    })
+    let moving = false
+    window.canvas.addEventListener('mousedown', function(event) {
+        moving = true
+    })
+    window.canvas.addEventListener('mousemove', function(event) {
+        if (!window.activeTile) {
+            return
+        }
+        if (moving) {
+            let x = event.clientX
+            let y = event.clientY
+            drawTileAt(x, y)
+        }
+    })
+    // 拖动事件
+    window.canvas.addEventListener('mouseup', function(event) {
+        moving = false
+    })
+}
+
+const init = () => {
+    window.map = new Map()
+    window.active_tile_id = null
+    window.canvas = e('canvas')
+    window.context = window.canvas.getContext('2d')
+    window.context.fillStyle = '#5080FF'
+    window.context.fillRect(0, 0, 1000, 1000)
+}
+
+class Map {
+    constructor() {
+        this.height = 15
+        this.width = 20
+        this.tiles = []
+        this.setupTiles()
+    }
+    setupTiles() {
+        let s = this.height * this.width
+        for (var i = 0; i < this.height; i++) {
+            this.tiles[i] = 0
+        }
+    }
+    setTile(i, j, tile) {
+        let index = i * this.height + j
+        this.tiles[index] = tile
+    }
+    exportJSON() {
+        let s = JSON.stringify(this.tiles)
+        log(s)
+    }
+}
+const __main = () => {
+    init()
+    bindEvents()
+ }
+
+ __main()
+</script>
+</html>
