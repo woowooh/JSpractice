@@ -14,17 +14,26 @@ class SceneTitle extends GuaScene {
 
         this.setupInputs()
     }
-    setupTower() {
+    addTower(x, y) {
+        x = Math.floor(x / 100) * 100
+        y = Math.floor(y / 100) * 100
         let t1 = Tower.new(this.game)
-        t1.x = 100
-        t1.y = 160
+        t1.x = x
+        t1.y = y
         this.addElement(t1)
+
         this.towers.push(t1)
     }
+    setupTower() {
+        this.addTower(100, 120)
+        this.addTower(100, 160)
+    }
     setupGameElements() {
-        for (let i = 0; i < 3; i++) {
+        let offset = [0, 50]
+        for (let i = 0; i < 23; i++) {
             let e1 = Enemy.new(this.game)
             e1.x -= 50 * i
+            e1.y -= offset[i % 2]
             this.addElement(e1)
             this.enemies.push(e1)
         }
@@ -53,6 +62,8 @@ class SceneTitle extends GuaScene {
     setupInputs() {
         var self = this
         let startDrag = false
+        let ox = 0
+        let oy = 0
         this.game.registerMouse(function(event, status) {
             let x = event.offsetX
             let y = event.offsetY
@@ -63,13 +74,17 @@ class SceneTitle extends GuaScene {
                     startDrag = true
                     self.tower = self.gun.clone()
                     self.addElement(self.tower)
+                    // 设置偏移 x 和 y
+                     ox = self.tower.x - x
+                     oy = self.tower.y - y
                 }
             } else if (status == 'move') {
-                self.tower.x = x
-                self.tower.y = y
+                self.tower.x = x + ox
+                self.tower.y = y + oy
             } else {
                 startDrag = false
                 self.removeElement(self.tower)
+                self.addTower(x, y)
             }
         })
         // var self = this
