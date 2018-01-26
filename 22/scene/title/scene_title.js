@@ -79,8 +79,10 @@ class SceneTitle extends GuaScene {
                      oy = self.tower.y - y
                 }
             } else if (status == 'move') {
-                self.tower.x = x + ox
-                self.tower.y = y + oy
+                if (startDrag) {
+                    self.tower.x = x + ox
+                    self.tower.y = y + oy
+                }
             } else {
                 startDrag = false
                 self.removeElement(self.tower)

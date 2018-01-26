@@ -5,9 +5,19 @@ class Enemy extends GuaImage {
         this.setup()
     }
     setup() {
+        this.stepIndex = 0
+        // 塔防游戏关卡应该提供的数据， 图片，哪里可以放塔，路标。
+        // 需要关卡编辑器
+        this.steps = [
+            [0, 170],
+            [0, 0],
+            [300, 0],
+            [300, 170],
+            [600, 170],
+        ]
         this.dead = false
-        this.y = 200
-        this.speed = 1
+        this.y = 160
+        this.speed = 2
         this.maxHP = 18
         this.hp = this.maxHP
         this.destination = 500
@@ -16,9 +26,26 @@ class Enemy extends GuaImage {
         if (this.dead) {
             return
         }
-        this.x += this.speed
-        if (this.x > this.destination) {
-            log('敌人已经到达')
+        let [dx, dy] = this.steps[this.stepIndex]
+        let signX = dx > this.x ? 1 : -1
+        let signY = dy > this.y ? 1 : -1
+        if (dx == this.x) {
+            signX = 0
+        }
+        if (dy == this.y) {
+            signY = 0
+        }
+        this.x += this.speed * signX
+        this.y += this.speed * signY
+
+        if (this.x == dx && this.y == dy) {
+            log('敌人已经到达目标点')
+            this.stepIndex++
+            // 判断敌人是否到达终点
+            if (this.stepIndex == this.steps.length) {
+                log('敌人到达终点')
+                this.die()
+            }
         }
     }
     drawHPbar() {
@@ -48,6 +75,6 @@ class Enemy extends GuaImage {
         // 应该播放死亡动画
         // 这时候还应该把元素移出场景中
         this.game.scene.removeElement(this)
-        log('敌人死亡')
+        // log('敌人死亡')
     }
 }
